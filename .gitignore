@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data (keep directory structure via .gitkeep, ignore bulky content)
+data/raw/*
+data/processed/*
+data/external/*
+!data/**/.gitkeep
+
+# Trained model artifacts
+artifacts/
+*.pkl
+*.joblib
+*.pt
+
+# Secrets / local config
+.env
+config/secrets.yaml
+
+# OS
+.DS_Store
