@@ -31,6 +31,12 @@ evaluation → honest walk-forward backtesting → fractional-Kelly staking.
 
 ---
 
+> 🟢 **New to Python or just want to get running fast?** Read
+> **[`HOW_TO_RUN.md`](HOW_TO_RUN.md)** — a plain-English, copy-paste setup &
+> API-connection guide for beginners.
+
+---
+
 ## 📦 Installation
 
 ```bash
