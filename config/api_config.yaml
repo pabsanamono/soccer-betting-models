@@ -1,0 +1,111 @@
+# =============================================================================
+# World Cup 2026 — API & prediction configuration
+# =============================================================================
+# This file controls how the two World Cup scripts behave:
+#
+#     python scripts/fetch_worldcup_data.py     # downloads the data
+#     python scripts/predict_worldcup.py        # trains models + predicts
+#
+# You only NEED to edit one thing to use live data: paste your API key below.
+# If you leave the key blank, the scripts still run in DEMO mode using a
+# built-in, realistic World Cup 2026 dataset — so you can see predictions
+# immediately and add a real key whenever you are ready.
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# 1) API KEYS
+# -----------------------------------------------------------------------------
+# TheStatsAPI is the recommended provider (historical data + fixtures + odds).
+#
+#   HOW TO GET A KEY (takes ~3 minutes):
+#     1. Go to https://www.thestatsapi.com
+#     2. Click "Get Started" / "Sign Up" and create an account.
+#     3. Choose a plan (the Starter plan covers everything these scripts need).
+#     4. Open your dashboard and copy your API key.
+#     5. Paste it between the quotes on the `api_key:` line below.
+#
+#   You can also set it as an environment variable instead of editing this file:
+#     Windows (PowerShell):  $env:THESTATSAPI_KEY = "your-key-here"
+#     macOS/Linux:           export THESTATSAPI_KEY="your-key-here"
+# -----------------------------------------------------------------------------
+thestatsapi:
+  api_key: ""                              # <-- PASTE YOUR KEY HERE
+  base_url: https://api.thestatsapi.com/v1
+  competition: world-cup-2026
+  season: "2026"
+  rate_limit_per_min: 120                  # Starter plan limit
+  # How the key is sent. One of: header (Authorization: Bearer),
+  # header_x_api_key (X-API-Key), or query (apiKey=...). Try "header" first;
+  # switch if you get a 401/403 authentication error.
+  auth_style: header
+  # Endpoint path overrides (only change if TheStatsAPI renames a route).
+  endpoints:
+    results: matches
+    fixtures: fixtures
+    odds: odds
+  # Optional: override JSON field names if the provider's schema differs.
+  # Each entry is a list of candidate keys tried in order. Leave empty to use
+  # the built-in tolerant defaults.
+  field_map: {}
+
+# Optional FREE backup provider, used automatically only if TheStatsAPI has no
+# key configured. Coverage of World Cup 2026 may be partial.
+bzzoiro:
+  enabled: true
+  api_key: ""                              # optional; free tier needs no key
+  base_url: https://api.bzzoiro.com/v1
+  competition: world-cup-2026
+
+# -----------------------------------------------------------------------------
+# 2) DEMO MODE
+# -----------------------------------------------------------------------------
+# When no working API key is available, the scripts fall back to a realistic
+# built-in World Cup 2026 dataset (48 real teams, 72 group-stage fixtures,
+# bookmaker odds). Set allow_demo_fallback: false to force a hard error instead
+# (useful once you are confident your live key works).
+demo:
+  allow_demo_fallback: true
+  seed: 2026
+
+# -----------------------------------------------------------------------------
+# 3) WHERE FILES ARE SAVED
+# -----------------------------------------------------------------------------
+output:
+  data_dir: data/worldcup                  # CSVs are written here
+  historical_file: worldcup_historical.csv
+  fixtures_file: worldcup_fixtures.csv
+  odds_file: worldcup_odds.csv
+  predictions_file: worldcup_predictions.csv
+  value_bets_file: worldcup_value_bets.csv
+
+# -----------------------------------------------------------------------------
+# 4) MODELS
+# -----------------------------------------------------------------------------
+# Which model to use for the headline predictions. Dixon-Coles is recommended
+# (best results in prior backtests). Options: dixon_coles, poisson,
+# bivariate_poisson, elo.
+prediction:
+  model: dixon_coles
+  dixon_coles:
+    xi: 0.0018       # time-decay rate per day (recent matches weigh more)
+    max_goals: 10
+  poisson:
+    max_goals: 10
+  # Also fit these models for a side-by-side comparison table.
+  # (bivariate_poisson is accurate but slow to fit on 48 teams -- add it back
+  #  here if you don't mind waiting a couple of extra minutes.)
+  compare_models: [dixon_coles, poisson, elo]
+
+# -----------------------------------------------------------------------------
+# 5) VALUE BETS
+# -----------------------------------------------------------------------------
+value_bets:
+  # Flag a bet when the model's expected return per unit stake exceeds this.
+  # 0.05 = only show bets with at least a 5% edge over the bookmaker.
+  min_edge: 0.05
+  # Method used to remove the bookmaker margin before comparing probabilities.
+  # One of: multiplicative, additive, shin, power.
+  devig_method: shin
+  # Optional ceiling on a selection's market probability (skip heavy favourites
+  # where edges are usually illusory). Set to null to disable.
+  max_market_prob: 0.85

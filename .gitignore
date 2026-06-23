@@ -27,7 +27,12 @@ htmlcov/
 data/raw/*
 data/processed/*
 data/external/*
+data/worldcup/*
 !data/**/.gitkeep
+
+# Auto-generated document previews of the markdown guide
+API_GUIDE.docx
+API_GUIDE.pdf
 
 # Trained model artifacts
 artifacts/
